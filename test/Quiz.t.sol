@@ -17,6 +17,7 @@ contract QuizTest is Test {
        q1 = quiz.getQuiz(1);
     }
 
+// Owner외 외에는 퀴즈를 추가해서는 안 된다. 
     function testAddQuizACL() public {
         uint quiz_num_before = quiz.getQuizNum();
         Quiz.Quiz_item memory q;
@@ -74,7 +75,7 @@ contract QuizTest is Test {
         quiz.betToPlay{value: q1.min_bet}(1);
         assertEq(quiz.bets(0, address(this)), q1.min_bet * 2);
     }
-
+// 정답 비교
     function testSolve1() public {
         quiz.betToPlay{value: q1.min_bet}(1);
         assertEq(quiz.solveQuiz(1, quiz.getAnswer(1)), true);
