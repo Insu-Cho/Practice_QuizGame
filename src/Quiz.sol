@@ -17,11 +17,11 @@ contract Quiz is Ownable{
 // Quizes을 담을 수 있는 mapping 선언
 // Quize 현재 퀴즈 정보를  접근 할 수 있도록 mapping 선언
 // 현재 상금 정보를 누적할 수 있는 mapping 선언 
-    mapping(address => uint256)[] public bets;
-    mapping(uint => Quiz_item) public Quizes;
-    mapping(address => uint256) public Prize;
-    uint public vault_balance;
-    uint quiz_current;
+    mapping(address => uint256)[] public bets; //배팅 현황 기록
+    mapping(uint => Quiz_item) public Quizes; // 퀴즈 구조체 저장
+    mapping(address => uint256) public Prize; // 각 사용자의 상금 저장
+    uint public vault_balance; // 현재 이더리움 내에서 가용할 수 있는 금액
+    uint quiz_current;  // 현재 가르키고 있는 퀴즈
 
 
     constructor () Ownable(msg.sender) {
@@ -41,19 +41,17 @@ contract Quiz is Ownable{
             return keccak256(abi.encodePacked(str1)) == keccak256(abi.encodePacked(str2));
         }
 
+
     function addQuiz(Quiz_item memory q) public onlyOwner {
         Quizes[q.id] = q;
         quiz_current=q.id;
     }
 
 // owner 여부에 따라 다르게 return
-    function getAnswer(uint quizId) public view returns (string memory){
-        if (msg.sender == owner()) {
-            return Quizes[quizId].answer;
-        } else {
-            return "";
-        }
+    function getAnswer(uint quizId) public onlyOwner view returns (string memory){
         
+        return Quizes[quizId].answer;
+
     }
 
 // GetQuiz시에는 정답을 공개하면 안됨
@@ -74,7 +72,6 @@ contract Quiz is Ownable{
         require((Quizes[quizId].max_bet >= msg.value),"It has exceeded the maximum.");
         bets.push();
         bets[quizId-1][msg.sender] += msg.value;
-        vault_balance -= msg.value;
 
     }
 
